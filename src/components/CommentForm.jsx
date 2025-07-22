@@ -48,7 +48,13 @@ const CommentForm = ({ onSubmit, buttonText = 'SEND', placeholder = 'Add a comme
           rows="3"
           placeholder={placeholder}
         ></textarea>
-        {errors.commentText && <p className="text-red-500 text-sm mt-1">{errors.commentText.message}</p>}
+        {/* Show empty error if commentValue is empty */}
+        {errors.commentText?.type === 'required' && commentValue === '' && (
+          <p className="text-red-500 text-sm mt-1">{errors.commentText.message}</p>
+        )}
+        {errors.commentText?.type !== 'required' && errors.commentText && (
+          <p className="text-red-500 text-sm mt-1">{errors.commentText.message}</p>
+        )}
         {maxError && <p className="text-red-500 text-sm mt-1">{maxError}</p>}
         <div className="text-xs text-gray-400 mt-1 text-right">{commentValue.length}/{MAX_COMMENT_LENGTH}</div>
       </div>
