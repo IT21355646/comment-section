@@ -130,14 +130,14 @@ const commentsSlice = createSlice({
         'juliusomo': images[3],
       };
 
-      // Replace images in top-level comments
+      // Images in top-level comments
       for (const comment of state.comments) {
         const username = comment.user.username;
         if (userImageMap[username]) {
           comment.user.image = userImageMap[username];
         }
 
-        // Replace images in replies
+        // Images in replies
         for (const reply of comment.replies) {
           const replyUsername = reply.user.username;
           if (userImageMap[replyUsername]) {
@@ -146,7 +146,7 @@ const commentsSlice = createSlice({
         }
       }
 
-      // Replace current user image
+      // Current user image
       const currentUser = state.currentUser.username;
       if (userImageMap[currentUser]) {
         state.currentUser.image = userImageMap[currentUser];
