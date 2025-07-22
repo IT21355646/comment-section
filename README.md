@@ -41,13 +41,16 @@ A fully responsive, single-page React application that implements an interactive
 
 2. **Navigate to the project folder:**
 
+   ```bash
    cd comment-section
 
 3. **Install dependencies:**
 
+   ```bash
     npm install
 
 4. **Start the development server:**
 
+   ```bash
     npm run dev
 
