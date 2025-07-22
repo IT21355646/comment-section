@@ -7,12 +7,25 @@ const Comment = ({ comment }) => {
   const dispatch = useDispatch();
   const [isReplying, setIsReplying] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContent, setEditedContent] = useState(comment.content);
   const currentUser = useSelector((state) => state.comments.currentUser);
   const isCurrentUser = comment.user.username === currentUser.username;
 
   const handleAddReply = (content) => {
     dispatch(addReply({ parentId: comment.id, content, replyingTo: comment.user.username }));
     setIsReplying(false);
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setEditedContent(comment.content);
+  };
+
+  const handleSaveEdit = () => {
+    // Update locally for now
+    comment.content = editedContent;
+    setIsEditing(false);
   };
 
   if (isDeleted) return null; // Mock deletion - Hide comment if deleted
@@ -37,38 +50,60 @@ const Comment = ({ comment }) => {
               <span className="text-slate-500">{comment.createdAt}</span>
             </div>
             {isCurrentUser ? (
-                <div className="flex space-x-4">
-                    <button
-                      className="text-red-500 font-bold hover:text-red-300 flex items-center space-x-1"
-                      onClick={() => setIsDeleted(true)} // Hide comment on delete
-                    >
-                      {/* Delete icon */}
-                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m2 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12z" />
-                        <line x1="10" y1="11" x2="10" y2="17" />
-                        <line x1="14" y1="11" x2="14" y2="17" />
-                      </svg>
-                      <span>Delete</span>
-                    </button>
-                    <button className="text-blue-900 font-bold hover:text-blue-600 flex items-center space-x-1">
-                      {/* Edit icon */}
-                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M17.414 2.586a2 2 0 010 2.828l-10 10A2 2 0 016 16H4a1 1 0 01-1-1v-2a2 2 0 01.586-1.414l10-10a2 2 0 012.828 0zM15 4l1 1-10 10H5v-1L15 4z" />
-                      </svg>
-                      <span>Edit</span>
-                    </button>
-                </div>
-            ) : (
-                <button onClick={() => setIsReplying(!isReplying)} className="text-blue-900 font-bold hover:text-blue-600 flex items-center">
-                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd"></path>
-                    </svg>
-                    Reply
+              <div className="flex space-x-4">
+                <button
+                  className="text-red-500 font-bold hover:text-red-300 flex items-center space-x-1"
+                  onClick={() => setIsDeleted(true)}
+                >
+                  {/* Delete icon */}
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m2 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12z" />
+                    <line x1="10" y1="11" x2="10" y2="17" />
+                    <line x1="14" y1="11" x2="14" y2="17" />
+                  </svg>
+                  <span>Delete</span>
                 </button>
+                {isEditing ? (
+                  <button
+                    className="text-blue-900 font-bold hover:text-blue-400 flex items-center space-x-1"
+                    onClick={handleSaveEdit}
+                  >
+                    {/* Save icon */}
+                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M17 7l-7 7-4-4" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span>Save</span>
+                  </button>
+                ) : (
+                  <button className="text-blue-900 font-bold hover:text-blue-600 flex items-center space-x-1" onClick={handleEdit}>
+                    {/* Edit icon */}
+                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M17.414 2.586a2 2 0 010 2.828l-10 10A2 2 0 016 16H4a1 1 0 01-1-1v-2a2 2 0 01.586-1.414l10-10a2 2 0 012.828 0zM15 4l1 1-10 10H5v-1L15 4z" />
+                    </svg>
+                    <span>Edit</span>
+                  </button>
+                )}
+              </div>
+            ) : (
+              <button onClick={() => setIsReplying(!isReplying)} className="text-blue-900 font-bold hover:text-blue-600 flex items-center">
+                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd"></path>
+                  </svg>
+                  Reply
+              </button>
             )}
           </div>
           <p className="mt-3 text-slate-600">
              {comment.replyingTo && <span className="font-bold text-blue-900">@{comment.replyingTo} </span>}
-             {comment.content}
+             {isEditing ? (
+               <textarea
+                 className="w-full border rounded p-2 mt-2"
+                 value={editedContent}
+                 onChange={e => setEditedContent(e.target.value)}
+                 rows={3}
+               />
+             ) : (
+               comment.content
+             )}
           </p>
         </div>
       </div>
