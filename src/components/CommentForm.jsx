@@ -30,7 +30,7 @@ const CommentForm = ({ onSubmit, buttonText = 'SEND', placeholder = 'Add a comme
       </div>
       <button
         type="submit"
-        className="bg-indigo-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-indigo-500 transition-colors h-fit"
+        className="bg-blue-900 text-white font-semibold px-6 py-3 rounded-lg hover:bg-indigo-500 transition-colors h-fit"
       >
         {buttonText}
       </button>
