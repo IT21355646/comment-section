@@ -92,19 +92,28 @@ const Comment = ({ comment }) => {
               </button>
             )}
           </div>
-          <p className="mt-3 text-slate-600">
-             {comment.replyingTo && <span className="font-bold text-blue-900">@{comment.replyingTo} </span>}
-             {isEditing ? (
-               <textarea
-                 className="w-full border rounded p-2 mt-2"
-                 value={editedContent}
-                 onChange={e => setEditedContent(e.target.value)}
-                 rows={3}
-               />
-             ) : (
-               comment.content
-             )}
-          </p>
+          <div className="mt-3 bg-slate-50 p-3 rounded-lg overflow-x-auto overflow-y-auto max-h-40 w-full">
+            <div
+              className={`text-slate-600 whitespace-pre-line w-full ${
+                /\s/.test(comment.content) ? 'break-words' : 'break-all'
+              }`}
+            >
+              {comment.replyingTo && <span className="font-bold text-blue-900">@{comment.replyingTo} </span>}
+              {isEditing ? (
+                <textarea
+                  className={`w-full border rounded p-2 whitespace-pre-line resize-none ${
+                    /\s/.test(editedContent) ? 'break-words' : 'break-all'
+                  }`}
+                  value={editedContent}
+                  onChange={e => setEditedContent(e.target.value)}
+                  rows={3}
+                  style={{ maxHeight: '120px', width: '100%' }}
+                />
+              ) : (
+                <span>{comment.content}</span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
