@@ -2,9 +2,15 @@ import CommentList from './components/CommentList';
 import CommentForm from './components/CommentForm';
 import { useDispatch } from 'react-redux';
 import { addComment } from './feature/comments/commentsSlice';
+import { useEffect } from 'react';
+import { fetchRandomUserImages } from './feature/comments/commentsSlice';
 
 function App() {
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchRandomUserImages(4));
+  }, [dispatch]);
 
   const handleAddComment = (content) => {
     dispatch(addComment({ content }));

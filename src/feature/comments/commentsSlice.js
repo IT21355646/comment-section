@@ -1,12 +1,17 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
-import amyrobsonImage from '../../assets/react.svg'; // We will create this folder and add images later
-import maxblagunImage from '../../assets/react.svg';
-import ramsesmironImage from '../../assets/react.svg';
-import juliusomoImage from '../../assets/react.svg';
+import { createAsyncThunk, createSlice, nanoid } from '@reduxjs/toolkit';
+
+export const fetchRandomUserImages = createAsyncThunk(
+  'comments/fetchRandomUserImages',
+  async (count = 4) => {
+    const response = await fetch(`https://randomuser.me/api/?results=${count}`);
+    const data = await response.json();
+    return data.results.map(user => user.picture.large);
+  }
+);
 
 const initialState = {
   currentUser: {
-    image: juliusomoImage,
+    image: '',
     username: 'juliusomo',
   },
   comments: [
@@ -17,7 +22,7 @@ const initialState = {
       createdAt: '1 month ago',
       score: 12,
       user: {
-        image: amyrobsonImage,
+        image: '',
         username: 'amyrobson',
       },
       replies: [],
@@ -29,7 +34,7 @@ const initialState = {
       createdAt: '2 weeks ago',
       score: 5,
       user: {
-        image: maxblagunImage,
+        image: '',
         username: 'maxblagun',
       },
       replies: [
@@ -41,7 +46,7 @@ const initialState = {
           score: 4,
           replyingTo: 'maxblagun',
           user: {
-            image: ramsesmironImage,
+            image: '',
             username: 'ramsesmiron',
           },
         },
@@ -53,7 +58,7 @@ const initialState = {
           score: 2,
           replyingTo: 'ramsesmiron',
           user: {
-            image: juliusomoImage,
+            image: '',
             username: 'juliusomo',
           },
         },
@@ -61,7 +66,6 @@ const initialState = {
     },
   ],
 };
-
 
 const findCommentById = (comments, commentId) => {
   for (const comment of comments) {
@@ -115,6 +119,39 @@ const commentsSlice = createSlice({
         }
       }
     },
+  },extraReducers: (builder) => {
+    builder.addCase(fetchRandomUserImages.fulfilled, (state, action) => {
+      const images = action.payload;
+
+      const userImageMap = {
+        'amyrobson': images[0],
+        'maxblagun': images[1],
+        'ramsesmiron': images[2],
+        'juliusomo': images[3],
+      };
+
+      // Replace images in top-level comments
+      for (const comment of state.comments) {
+        const username = comment.user.username;
+        if (userImageMap[username]) {
+          comment.user.image = userImageMap[username];
+        }
+
+        // Replace images in replies
+        for (const reply of comment.replies) {
+          const replyUsername = reply.user.username;
+          if (userImageMap[replyUsername]) {
+            reply.user.image = userImageMap[replyUsername];
+          }
+        }
+      }
+
+      // Replace current user image
+      const currentUser = state.currentUser.username;
+      if (userImageMap[currentUser]) {
+        state.currentUser.image = userImageMap[currentUser];
+      }
+    });
   },
 });
 
